@@ -68,7 +68,7 @@ export class EndpointSearchProvider {
         }
 
         const quickPick = vscode.window.createQuickPick<EndpointQuickPickItem>();
-        quickPick.placeholder = 'Enter URL to search (e.g., /jst/bom/list)';
+        quickPick.placeholder = 'Enter URL to search (e.g., /api/users)';
         quickPick.matchOnDescription = true;
         quickPick.matchOnDetail = true;
 

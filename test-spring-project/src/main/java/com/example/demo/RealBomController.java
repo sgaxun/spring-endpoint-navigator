@@ -7,45 +7,45 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
-@RequestMapping("/jst/bom")
+@RequestMapping("/api/orders")
 public class RealBomController {
 
     /**
-     * 查询bom管理列表
+     * 查询订单管理列表
      */
-    @PreAuthorize("@ss.hasPermi('jst:bom:list')")
+    @PreAuthorize("@ss.hasPermi('orders:list')")
     @GetMapping("/list")
     public String list() {
-        return "BOM List Data";
+        return "Orders List Data";
     }
 
     /**
-     * 新增BOM物料清单
-     * 添加新的物料信息到系统中
+     * 新增订单
+     * 添加新的订单信息到系统中
      */
-    @PreAuthorize("@ss.hasPermi('jst:bom:add')")
+    @PreAuthorize("@ss.hasPermi('orders:add')")
     @PostMapping("/add")
-    public String add(@RequestBody String bom) {
-        return "Added BOM: " + bom;
+    public String add(@RequestBody String order) {
+        return "Added Order: " + order;
     }
 
     /**
-     * 修改BOM物料清单
-     * 更新现有的物料信息
+     * 修改订单
+     * 更新现有的订单信息
      */
-    @PreAuthorize("@ss.hasPermi('jst:bom:edit')")
+    @PreAuthorize("@ss.hasPermi('orders:edit')")
     @PostMapping("/edit")
-    public String edit(@RequestBody String bom) {
-        return "Edited BOM: " + bom;
+    public String edit(@RequestBody String order) {
+        return "Edited Order: " + order;
     }
 
     /**
-     * 删除BOM物料清单
-     * 从系统中移除指定的物料信息
+     * 删除订单
+     * 从系统中移除指定的订单信息
      */
-    @PreAuthorize("@ss.hasPermi('jst:bom:remove')")
+    @PreAuthorize("@ss.hasPermi('orders:remove')")
     @PostMapping("/remove")
-    public String remove(@RequestBody String bomIds) {
-        return "Removed BOM: " + bomIds;
+    public String remove(@RequestBody String orderIds) {
+        return "Removed Orders: " + orderIds;
     }
 }

@@ -16,9 +16,9 @@ A VS Code extension that helps you quickly search and navigate to Spring Boot co
 1. **Open the Search**: Press `Ctrl+Alt+E` (or `Cmd+Alt+E` on Mac) or use the command palette (`Ctrl+Shift+P`) and search for "Search Spring Endpoint"
 
 2. **Enter URL**: Type the URL path you're looking for, for example:
-   - `/jst/bom/list` - Will match endpoints with this exact path
-   - `bom/list` - Will also match `/jst/bom/list` and similar paths
-   - `bom` - Will fuzzy match any endpoints containing "bom"
+   - `/api/users` - Will match endpoints with this exact path
+   - `users` - Will also match `/api/users` and similar paths
+   - `user` - Will fuzzy match any endpoints containing "user"
 
 3. **Select and Navigate**: Use arrow keys to browse results and press Enter to navigate to the selected endpoint
 
