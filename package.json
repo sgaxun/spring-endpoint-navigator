@@ -2,7 +2,17 @@
   "name": "spring-endpoint-navigator",
   "displayName": "Spring Endpoint Navigator",
   "description": "Quickly search and navigate to Spring Boot controller endpoints by URL path",
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "publisher": "sgaxun",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/sgaxun/spring-endpoint-navigator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sgaxun/spring-endpoint-navigator/issues"
+  },
+  "homepage": "https://github.com/sgaxun/spring-endpoint-navigator#readme",
+  "license": "MIT",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -66,7 +76,10 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "watch": "tsc -watch -p ./"
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package",
+    "publish": "vsce publish",
+    "publish:open-vsx": "vsce publish --baseContentUrl https://open-vsx.org/api/extend --baseImagesUrl https://open-vsx.org/api/extend"
   },
   "devDependencies": {
     "@types/vscode": "^1.74.0",
