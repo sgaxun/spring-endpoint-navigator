@@ -29,7 +29,7 @@
     "java"
   ],
   "activationEvents": [
-    "onCommand:spring-endpoint-navigator.searchEndpoint"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
