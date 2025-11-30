@@ -1,5 +1,7 @@
 # Spring Endpoint Navigator
 
+**English** | [简体中文](./README.zh-CN.md)
+
 A VS Code extension that helps you quickly search and navigate to Spring Boot controller endpoints by URL path.
 
 ## Features
