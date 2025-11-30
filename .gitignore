@@ -1,0 +1,41 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# VS Code
+.vscode/test-spring-project/
+.vscode/launch.json
+.vscode/extensions.json
+
+# TypeScript
+*.tsbuildinfo
+
+# Build output
+out/
+dist/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Debug
+.vscode-test/
+
+# Extension marketplace
+*.vsix

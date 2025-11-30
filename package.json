@@ -1,0 +1,79 @@
+{
+  "name": "spring-endpoint-navigator",
+  "displayName": "Spring Endpoint Navigator",
+  "description": "Quickly search and navigate to Spring Boot controller endpoints by URL path",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Other"
+  ],
+  "keywords": [
+    "spring",
+    "spring boot",
+    "controller",
+    "endpoint",
+    "navigation",
+    "java"
+  ],
+  "activationEvents": [
+    "onCommand:spring-endpoint-navigator.searchEndpoint"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "spring-endpoint-navigator.searchEndpoint",
+        "title": "Search Spring Endpoint",
+        "category": "Spring Endpoint Navigator"
+      },
+      {
+        "command": "spring-endpoint-navigator.clearCache",
+        "title": "Clear Cache and Rescan",
+        "category": "Spring Endpoint Navigator"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "spring-endpoint-navigator.searchEndpoint",
+        "key": "ctrl+alt+e",
+        "mac": "cmd+alt+e"
+      }
+    ],
+    "configuration": {
+      "title": "Spring Endpoint Navigator",
+      "properties": {
+        "springEndpointNavigator.cacheTimeout": {
+          "type": "number",
+          "default": 300000,
+          "description": "Cache timeout in milliseconds (default: 5 minutes)"
+        },
+        "springEndpointNavigator.includeFiles": {
+          "type": "array",
+          "default": ["**/*.java"],
+          "description": "Glob patterns to include in Spring controller search"
+        },
+        "springEndpointNavigator.excludeFiles": {
+          "type": "array",
+          "default": ["**/node_modules/**", "**/target/**", "**/build/**"],
+          "description": "Glob patterns to exclude from Spring controller search"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.74.0",
+    "@types/node": "16.x",
+    "typescript": "^4.9.4"
+  },
+  "dependencies": {
+    "fuzzysort": "^2.0.4"
+  }
+}
