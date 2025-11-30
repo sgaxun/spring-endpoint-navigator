@@ -68,7 +68,21 @@ export class EndpointSearchProvider {
         }
 
         const quickPick = vscode.window.createQuickPick<EndpointQuickPickItem>();
-        quickPick.placeholder = 'Enter URL to search (e.g., /api/users, /example/*/list)';
+        const locale = vscode.env.language;
+
+        // Set title based on user's language
+        if (locale.startsWith('zh')) {
+            quickPick.title = 'Spring 端点导航器';
+        } else {
+            quickPick.title = 'Spring Endpoint Navigator';
+        }
+
+        // Set placeholder based on user's language
+        if (locale.startsWith('zh')) {
+            quickPick.placeholder = '输入URL进行搜索 (例如: /api/users, /example/*/list)';
+        } else {
+            quickPick.placeholder = 'Enter URL to search (e.g., /api/users, /example/*/list)';
+        }
         quickPick.matchOnDescription = true;
         quickPick.matchOnDetail = true;
 
