@@ -32,27 +32,36 @@ export class EndpointSearchProvider {
         }
     }
 
-    async refreshEndpoints(): Promise<void> {
+    async refreshEndpoints(showProgress: boolean = true): Promise<void> {
         try {
-            await vscode.window.withProgress({
-                location: vscode.ProgressLocation.Notification,
-                title: "Spring Endpoint Navigator",
-                cancellable: false
-            }, async (progress) => {
-                progress.report({ increment: 0, message: "Scanning for Spring controllers..." });
+            if (showProgress) {
+                await vscode.window.withProgress({
+                    location: vscode.ProgressLocation.Notification,
+                    title: "Spring Endpoint Navigator",
+                    cancellable: false
+                }, async (progress) => {
+                    progress.report({ increment: 0, message: "Scanning for Spring controllers..." });
 
+                    this.endpoints = await this.parser.scanControllers();
+                    this.cache.setEndpoints(this.endpoints);
+
+                    progress.report({ increment: 100, message: `Found ${this.endpoints.length} endpoints` });
+
+                    setTimeout(() => {
+                        progress.report({ increment: 100, message: "" });
+                    }, 2000);
+                });
+            } else {
+                // Background scan without progress notification
                 this.endpoints = await this.parser.scanControllers();
                 this.cache.setEndpoints(this.endpoints);
-
-                progress.report({ increment: 100, message: `Found ${this.endpoints.length} endpoints` });
-
-                setTimeout(() => {
-                    progress.report({ increment: 100, message: "" });
-                }, 2000);
-            });
+                console.log(`Background scan completed: found ${this.endpoints.length} endpoints`);
+            }
         } catch (error) {
             console.error('Error refreshing endpoints:', error);
-            vscode.window.showErrorMessage('Failed to scan Spring controllers');
+            if (showProgress) {
+                vscode.window.showErrorMessage('Failed to scan Spring controllers');
+            }
         }
     }
 
