@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 @RestController
 @RequestMapping("/api/users")
-public class BomController {
+public class UserController {
 
     /**
      * 获取用户列表

@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/products")
-public class ComplexBomController {
+public class ProductController {
 
     /**
      * 查询产品管理列表

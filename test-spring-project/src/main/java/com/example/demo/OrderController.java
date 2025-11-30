@@ -8,7 +8,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 
 @RestController
 @RequestMapping("/api/orders")
-public class RealBomController {
+public class OrderController {
 
     /**
      * 查询订单管理列表
