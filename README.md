@@ -2,10 +2,22 @@
 
 **English** | [简体中文](./README.zh-CN.md)
 
-A VS Code extension that helps you quickly search and navigate to Spring Boot controller endpoints by URL path.
+A powerful VS Code extension that provides comprehensive search and navigation for Spring Boot endpoints and files.
 
 ## Features
 
+### 🔍 Composite Search (NEW)
+- **Multi-tab Interface**: Three tabs for mixed search, file search, and endpoint search
+- **Unified Search Experience**: Search both files and endpoints simultaneously
+- **Quick Mode Switching**: Toggle between search modes using top buttons
+
+### 📁 File Search (NEW)
+- **Fuzzy Search**: Smart file name matching (e.g., `exampleers` finds `ExampleController.java`)
+- **Path-based Search**: Navigate through folder structures (e.g., `demo/Order` finds `OrderController.java`)
+- **File Type Icons**: Visual indicators for different file types
+- **File Information**: Display file size and relative path
+
+### 🌐 Endpoint Search
 - **Quick Search**: Use `Ctrl+Alt+E` (or `Cmd+Alt+E` on Mac) to bring up the search interface
 - **Fuzzy Matching**: Enter a URL path and see matching endpoints with intelligent ranking
 - **Wildcard Search**: Use `*` wildcards to match multiple endpoints at once (e.g., `/example/*/list`)
@@ -13,20 +25,43 @@ A VS Code extension that helps you quickly search and navigate to Spring Boot co
 - **Instant Navigation**: Press Enter to jump directly to the controller method
 - **Supports All HTTP Methods**: Works with GET, POST, PUT, DELETE, PATCH, and custom mappings
 - **Class and Method Level Mappings**: Understands both `@RequestMapping` on classes and methods
+- **JavaDoc Integration**: Display method comments for better context
+
+### ⚡ Performance Optimizations
+- **Intelligent Caching**: File index and endpoint caching for instant startup
+- **Background Updates**: Automatic cache updates when files change
+- **Fast Startup**: Uses `onStartupFinished` event for immediate activation
 
 ## Usage
 
-1. **Open the Search**: Press `Ctrl+Alt+E` (or `Cmd+Alt+E` on Mac) or use the command palette (`Ctrl+Shift+P`) and search for "Search Spring Endpoint"
+### Quick Start
+- **Composite Search**: Press `Ctrl+Alt+E` (or `Cmd+Alt+E` on Mac) - NEW
+- **Command Palette**: Use `Ctrl+Shift+P` and search for Spring Endpoint Navigator commands
 
-2. **Enter URL**: Type the URL path you're looking for, for example:
-   - `/api/users` - Will match endpoints with this exact path
-   - `users` - Will also match `/api/users` and similar paths
-   - `user` - Will fuzzy match any endpoints containing "user"
-   - `/example/*/list` - Will match all endpoints with the pattern `/example/*/list` (wildcard search)
-   - `*/list` - Will match all endpoints ending with `/list`
-   - `/api/*/detail/*` - Complex wildcard patterns supported
+### Search Examples
 
-3. **Select and Navigate**: Use arrow keys to browse results and press Enter to navigate to the selected endpoint
+#### File Search
+- `exampleers` → Find `ExampleController.java`
+- `demo/Order` → Find `OrderController.java`
+- `service` → Find all service class files
+- `UserCon` → Find `UserController.java`
+
+#### Endpoint Search
+- `/api/users` - Exact match for `/api/users` endpoint
+- `/api/*/list` - Wildcard search, matches `/api/users/list`, `/api/orders/list`, etc.
+- `getUser` - Fuzzy search for methods containing `getUser`
+- `/example/users/*` - All endpoints under `/example/users/`
+
+#### Composite Search
+- Type any query to search both files and endpoints simultaneously
+- Use top buttons to switch between search modes
+- Endpoints are prioritized in mixed results
+
+### Commands
+- `Spring Endpoint Navigator: Composite Search (Files & Endpoints)` - Main search interface
+- `Spring Endpoint Navigator: Search Files` - File-only search
+- `Spring Endpoint Navigator: Search Spring Endpoint` - Endpoint-only search
+- `Spring Endpoint Navigator: Clear Cache and Rescan` - Clear cache and rescan workspace
 
 ## Wildcard Search
 

@@ -2,10 +2,22 @@
 
 [English](./README.md) | **简体中文**
 
-一个帮助您快速搜索和导航 Spring Boot 控制器端点的 VS Code 扩展，通过 URL 路径进行查找。
+一个强大的 VS Code 扩展，为 Spring Boot 端点和文件提供全面的搜索和导航功能。
 
 ## 功能特性
 
+### 🔍 综合搜索（新功能）
+- **多标签页界面**：混合搜索、文件搜索、端点搜索三个标签页
+- **统一搜索体验**：同时搜索文件和端点
+- **快速模式切换**：通过顶部按钮在搜索模式间切换
+
+### 📁 文件搜索（新功能）
+- **模糊搜索**：智能文件名匹配（例如：输入 `exampleers` 找到 `ExampleController.java`）
+- **路径搜索**：浏览文件夹结构（例如：输入 `demo/Order` 找到 `OrderController.java`）
+- **文件类型图标**：不同文件类型的可视化指示器
+- **文件信息**：显示文件大小和相对路径
+
+### 🌐 端点搜索
 - **快速搜索**：使用 `Ctrl+Alt+E`（Mac 上为 `Cmd+Alt+E`）调出搜索界面
 - **模糊匹配**：输入 URL 路径，智能显示匹配的端点并按相关性排序
 - **通配符搜索**：使用 `*` 通配符一次匹配多个端点（例如：`/example/*/list`）
@@ -13,20 +25,43 @@
 - **即时导航**：按 Enter 键直接跳转到控制器方法
 - **支持所有 HTTP 方法**：支持 GET、POST、PUT、DELETE、PATCH 和自定义映射
 - **类和方法级别映射**：理解类和方法级别的 `@RequestMapping`
+- **JavaDoc 集成**：显示方法注释以提供更好的上下文
+
+### ⚡ 性能优化
+- **智能缓存**：文件索引和端点缓存，实现即时启动
+- **后台更新**：文件更改时自动更新缓存
+- **快速启动**：使用 `onStartupFinished` 事件实现立即激活
 
 ## 使用方法
 
-1. **打开搜索**：按 `Ctrl+Alt+E`（Mac 上为 `Cmd+Alt+E`）或使用命令面板（`Ctrl+Shift+P`）并搜索 "Search Spring Endpoint"
+### 快速开始
+- **综合搜索**：按 `Ctrl+Alt+E`（Mac 上为 `Cmd+Alt+E`）- 新功能
+- **命令面板**：使用 `Ctrl+Shift+P` 并搜索 Spring 端点导航器命令
 
-2. **输入 URL**：输入您要查找的 URL 路径，例如：
-   - `/api/users` - 精确匹配此路径的端点
-   - `users` - 也会匹配 `/api/users` 等类似路径
-   - `user` - 模糊匹配任何包含 "user" 的端点
-   - `/example/*/list` - 匹配所有符合 `/example/*/list` 模式的端点（通配符搜索）
-   - `*/list` - 匹配所有以 `/list` 结尾的端点
-   - `/api/*/detail/*` - 支持复杂的通配符模式
+### 搜索示例
 
-3. **选择和导航**：使用方向键浏览结果，按 Enter 键导航到选定的端点
+#### 文件搜索
+- `exampleers` → 找到 `ExampleController.java`
+- `demo/Order` → 找到 `OrderController.java`
+- `service` → 找到所有服务类文件
+- `UserCon` → 找到 `UserController.java`
+
+#### 端点搜索
+- `/api/users` - 精确匹配 `/api/users` 端点
+- `/api/*/list` - 通配符搜索，匹配 `/api/users/list`、`/api/orders/list` 等
+- `getUser` - 模糊搜索包含 `getUser` 的方法
+- `/example/users/*` - `/example/users/` 下的所有端点
+
+#### 综合搜索
+- 输入任意查询同时搜索文件和端点
+- 使用顶部按钮在搜索模式间切换
+- 端点结果在混合结果中优先显示
+
+### 命令
+- `Spring Endpoint Navigator: Composite Search (Files & Endpoints)` - 主搜索界面
+- `Spring Endpoint Navigator: Search Files` - 仅文件搜索
+- `Spring Endpoint Navigator: Search Spring Endpoint` - 仅端点搜索
+- `Spring Endpoint Navigator: Clear Cache and Rescan` - 清除缓存并重新扫描工作区
 
 ## 通配符搜索
 

@@ -35,8 +35,18 @@
   "contributes": {
     "commands": [
       {
+        "command": "spring-endpoint-navigator.search",
+        "title": "Composite Search (Files & Endpoints)",
+        "category": "Spring Endpoint Navigator"
+      },
+      {
         "command": "spring-endpoint-navigator.searchEndpoint",
         "title": "Search Spring Endpoint",
+        "category": "Spring Endpoint Navigator"
+      },
+      {
+        "command": "spring-endpoint-navigator.searchFile",
+        "title": "Search Files",
         "category": "Spring Endpoint Navigator"
       },
       {
@@ -47,7 +57,7 @@
     ],
     "keybindings": [
       {
-        "command": "spring-endpoint-navigator.searchEndpoint",
+        "command": "spring-endpoint-navigator.search",
         "key": "ctrl+alt+e",
         "mac": "cmd+alt+e"
       }
@@ -69,6 +79,11 @@
           "type": "array",
           "default": ["**/node_modules/**", "**/target/**", "**/build/**"],
           "description": "Glob patterns to exclude from Spring controller search"
+        },
+        "springEndpointNavigator.fileSearch.excludePatterns": {
+          "type": "array",
+          "default": ["**/node_modules/**", "**/target/**", "**/build/**", "**/.git/**", "**/dist/**", "**/.vscode/**", "**/.idea/**"],
+          "description": "Glob patterns to exclude from file search"
         }
       }
     }
