@@ -68,7 +68,7 @@ export class EndpointSearchProvider {
         }
 
         const quickPick = vscode.window.createQuickPick<EndpointQuickPickItem>();
-        quickPick.placeholder = 'Enter URL to search (e.g., /api/users)';
+        quickPick.placeholder = 'Enter URL to search (e.g., /api/users, /example/*/list)';
         quickPick.matchOnDescription = true;
         quickPick.matchOnDetail = true;
 
@@ -121,6 +121,11 @@ export class EndpointSearchProvider {
     private fuzzySearchEndpoints(searchText: string): EndpointQuickPickItem[] {
         const normalizedSearch = searchText.startsWith('/') ? searchText : '/' + searchText;
 
+        // Check if search contains wildcards
+        if (normalizedSearch.includes('*')) {
+            return this.wildcardSearchEndpoints(normalizedSearch);
+        }
+
         // First try exact matches
         const exactMatches = this.endpoints.filter(endpoint =>
             endpoint.url.toLowerCase().includes(normalizedSearch.toLowerCase()) ||
@@ -160,6 +165,38 @@ export class EndpointSearchProvider {
                 endpoint: result.obj
             };
         });
+    }
+
+    private wildcardSearchEndpoints(searchPattern: string): EndpointQuickPickItem[] {
+        // Convert wildcard pattern to regex
+        let regexPattern = searchPattern
+            // Escape regex special characters except *
+            .replace(/[.+?^${}()|[\]\\]/g, '\\$&')
+            // Replace * with .* (match any character sequence)
+            .replace(/\*/g, '.*')
+            // Ensure exact match from start to end
+            .replace(/^/, '^')
+            .replace(/$/, '$');
+
+        try {
+            const regex = new RegExp(regexPattern, 'i'); // case insensitive
+            const matches = this.endpoints.filter(endpoint =>
+                regex.test(endpoint.url)
+            );
+
+            console.log(`[DEBUG] Wildcard search: pattern="${searchPattern}" -> regex="${regexPattern}"`);
+            console.log(`[DEBUG] Found ${matches.length} matches`);
+            matches.forEach(match => console.log(`[DEBUG] Match: ${match.method} ${match.url}`));
+
+            return this.createQuickPickItems(matches);
+        } catch (error) {
+            console.error('Error in wildcard search:', error);
+            // Fallback to regular search if regex is invalid
+            const fallbackMatches = this.endpoints.filter(endpoint =>
+                endpoint.url.toLowerCase().includes(searchPattern.toLowerCase().replace(/\*/g, ''))
+            );
+            return this.createQuickPickItems(fallbackMatches);
+        }
     }
 
     private async navigateToEndpoint(endpoint: SpringEndpoint): Promise<void> {

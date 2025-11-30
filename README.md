@@ -8,6 +8,7 @@ A VS Code extension that helps you quickly search and navigate to Spring Boot co
 
 - **Quick Search**: Use `Ctrl+Alt+E` (or `Cmd+Alt+E` on Mac) to bring up the search interface
 - **Fuzzy Matching**: Enter a URL path and see matching endpoints with intelligent ranking
+- **Wildcard Search**: Use `*` wildcards to match multiple endpoints at once (e.g., `/example/*/list`)
 - **Smart Caching**: Controllers are scanned once and cached for fast subsequent searches
 - **Instant Navigation**: Press Enter to jump directly to the controller method
 - **Supports All HTTP Methods**: Works with GET, POST, PUT, DELETE, PATCH, and custom mappings
@@ -21,8 +22,32 @@ A VS Code extension that helps you quickly search and navigate to Spring Boot co
    - `/api/users` - Will match endpoints with this exact path
    - `users` - Will also match `/api/users` and similar paths
    - `user` - Will fuzzy match any endpoints containing "user"
+   - `/example/*/list` - Will match all endpoints with the pattern `/example/*/list` (wildcard search)
+   - `*/list` - Will match all endpoints ending with `/list`
+   - `/api/*/detail/*` - Complex wildcard patterns supported
 
 3. **Select and Navigate**: Use arrow keys to browse results and press Enter to navigate to the selected endpoint
+
+## Wildcard Search
+
+The extension supports powerful wildcard patterns for advanced endpoint discovery:
+
+### Wildcard Patterns
+- `*` matches any character sequence (including `/`)
+- Multiple wildcards are supported
+- Case-insensitive matching
+
+### Examples
+- `/example/*/list` - Matches `/example/users/list`, `/example/products/list`, `/example/orders/list`
+- `/api/*/detail/*` - Matches `/api/users/detail/{id}`, `/api/products/detail/{id}`
+- `*/list` - Matches all endpoints ending with `/list`
+- `/example/users/*` - Matches all endpoints under `/example/users/`
+- `/example/*/*` - Matches all two-level paths under `/example/`
+
+### Usage Tips
+- Start with `/` for exact path matching
+- Use wildcards for flexible pattern matching
+- Combine with fuzzy search for broader results
 
 ## Supported Annotations
 
