@@ -2,7 +2,7 @@
   "name": "spring-endpoint-navigator",
   "displayName": "Spring Endpoint Navigator",
   "description": "Quickly search and navigate to Spring Boot controller endpoints by URL path",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "publisher": "sgaxun",
   "repository": {
     "type": "git",
@@ -13,7 +13,11 @@
   },
   "homepage": "https://github.com/sgaxun/spring-endpoint-navigator#readme",
   "license": "MIT",
-  "licenseKeywords": ["MIT", "OSI Approved", "Permissive"],
+  "licenseKeywords": [
+    "MIT",
+    "OSI Approved",
+    "Permissive"
+  ],
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -78,17 +82,31 @@
         },
         "springEndpointNavigator.includeFiles": {
           "type": "array",
-          "default": ["**/*.java"],
+          "default": [
+            "**/*.java"
+          ],
           "description": "Glob patterns to include in Spring controller search"
         },
         "springEndpointNavigator.excludeFiles": {
           "type": "array",
-          "default": ["**/node_modules/**", "**/target/**", "**/build/**"],
+          "default": [
+            "**/node_modules/**",
+            "**/target/**",
+            "**/build/**"
+          ],
           "description": "Glob patterns to exclude from Spring controller search"
         },
         "springEndpointNavigator.fileSearch.excludePatterns": {
           "type": "array",
-          "default": ["**/node_modules/**", "**/target/**", "**/build/**", "**/.git/**", "**/dist/**", "**/.vscode/**", "**/.idea/**"],
+          "default": [
+            "**/node_modules/**",
+            "**/target/**",
+            "**/build/**",
+            "**/.git/**",
+            "**/dist/**",
+            "**/.vscode/**",
+            "**/.idea/**"
+          ],
           "description": "Glob patterns to exclude from file search"
         }
       }
