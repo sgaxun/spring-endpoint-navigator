@@ -35,7 +35,7 @@ A powerful VS Code extension that provides comprehensive search and navigation f
 ## Usage
 
 ### Quick Start
-- **Composite Search**: Press `Ctrl+Alt+E` (or `Cmd+Alt+E` on Mac) - NEW
+- **Composite Search**: Press `Ctrl+Alt+E` (or `Cmd+Alt+E` on Mac) - Selected text is automatically filled in the search box
 - **Command Palette**: Use `Ctrl+Shift+P` and search for Spring Endpoint Navigator commands
 
 ### Search Examples
