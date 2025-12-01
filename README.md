@@ -30,6 +30,7 @@ A powerful VS Code extension that provides comprehensive search and navigation f
 ### ⚡ Performance Optimizations
 - **Intelligent Caching**: File index and endpoint caching for instant startup
 - **Background Updates**: Automatic cache updates when files change
+- **Quiet Incremental Refresh**: Workspace watcher ignores build/temp outputs (e.g., `target/`, `.class`, logs) and batches updates to avoid console spam and CPU spikes
 - **Fast Startup**: Uses `onStartupFinished` event for immediate activation
 
 ## Usage
@@ -62,6 +63,7 @@ A powerful VS Code extension that provides comprehensive search and navigation f
 - `Spring Endpoint Navigator: Search Files` - File-only search
 - `Spring Endpoint Navigator: Search Spring Endpoint` - Endpoint-only search
 - `Spring Endpoint Navigator: Clear Cache and Rescan` - Clear cache and rescan workspace
+- `Spring Endpoint Navigator: Refresh Cache` - Manually trigger a rescan when needed
 
 ## Wildcard Search
 

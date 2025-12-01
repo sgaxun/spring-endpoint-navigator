@@ -54,6 +54,11 @@
         "command": "spring-endpoint-navigator.clearCache",
         "title": "Clear Cache and Rescan",
         "category": "Spring Endpoint Navigator"
+      },
+      {
+        "command": "spring-endpoint-navigator.refreshCache",
+        "title": "Refresh Cache",
+        "category": "Spring Endpoint Navigator"
       }
     ],
     "keybindings": [

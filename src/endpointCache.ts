@@ -6,6 +6,7 @@ export interface CacheData {
     endpoints: SpringEndpoint[];
     lastScan: number;
     workspacePath: string;
+    fileModificationTimes: Record<string, number>;
 }
 
 export class EndpointCache {
@@ -42,10 +43,16 @@ export class EndpointCache {
         const workspaceFolders = vscode.workspace.workspaceFolders;
         const workspacePath = workspaceFolders ? workspaceFolders[0].uri.fsPath : '';
 
+        const fileModificationTimes: Record<string, number> = {};
+        for (const endpoint of endpoints) {
+            fileModificationTimes[endpoint.filePath] = Date.now();
+        }
+
         this.cacheData = {
             endpoints,
             lastScan: Date.now(),
-            workspacePath
+            workspacePath,
+            fileModificationTimes
         };
         this.saveCache();
     }
@@ -71,6 +78,50 @@ export class EndpointCache {
     clearCache(): void {
         this.cacheData = null;
         this.context.globalState.update(this.cacheKey, null);
+    }
+
+    /**
+     * 检查指定文件的端点是否需要更新
+     */
+    needsUpdate(filePath: string): boolean {
+        if (!this.cacheData) {
+            return true;
+        }
+
+        const cachedTime = this.cacheData.fileModificationTimes[filePath];
+        return !cachedTime;
+    }
+
+    /**
+     * 删除指定文件下的端点
+     */
+    removeEndpointsFromFile(filePath: string): void {
+        if (!this.cacheData) {
+            return;
+        }
+
+        this.cacheData.endpoints = this.cacheData.endpoints.filter(endpoint => endpoint.filePath !== filePath);
+        delete this.cacheData.fileModificationTimes[filePath];
+        this.saveCache();
+    }
+
+    /**
+     * 更新指定文件下的端点
+     */
+    updateEndpointsFromFile(filePath: string, newEndpoints: SpringEndpoint[]): void {
+        if (!this.cacheData) {
+            return;
+        }
+
+        this.cacheData.endpoints = this.cacheData.endpoints.filter(endpoint => endpoint.filePath !== filePath);
+        this.cacheData.endpoints.push(...newEndpoints);
+        this.cacheData.fileModificationTimes[filePath] = Date.now();
+        this.cacheData.lastScan = Date.now();
+        this.saveCache();
+    }
+
+    getFileModificationTimes(): Record<string, number> {
+        return this.cacheData?.fileModificationTimes || {};
     }
 
     getLastScanTime(): number {

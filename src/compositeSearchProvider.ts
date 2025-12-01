@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import * as fuzzysort from 'fuzzysort';
+import * as path from 'path';
 import { SpringControllerParser, SpringEndpoint } from './springControllerParser';
 import { EndpointCache } from './endpointCache';
 import { FileIndex, FileIndexItem } from './fileIndex';
@@ -27,6 +28,28 @@ export class CompositeSearchProvider {
         this.endpointCache = endpointCache;
         this.fileIndex = fileIndex;
         this.fileSearchProvider = new FileSearchProvider(fileIndex);
+    }
+
+    async handleFileChange(filePath: string, changeType: 'created' | 'modified' | 'deleted'): Promise<void> {
+        await this.ensureCachesLoaded();
+
+        try {
+            switch (changeType) {
+                case 'created':
+                case 'modified':
+                    await this.updateSingleFile(filePath);
+                    break;
+                case 'deleted':
+                    this.removeSingleFile(filePath);
+                    break;
+            }
+        } catch (error) {
+            console.error('[CompositeSearchProvider] Incremental update failed:', error);
+        }
+    }
+
+    isFileIgnored(filePath: string): boolean {
+        return this.shouldExcludeFile(filePath);
     }
 
     async initializeCaches(): Promise<void> {
@@ -73,6 +96,28 @@ export class CompositeSearchProvider {
         ]);
     }
 
+    private async ensureCachesLoaded(): Promise<void> {
+        if (this.files.length === 0) {
+            const cachedFiles = this.fileIndex.getFiles();
+            if (cachedFiles) {
+                this.files = cachedFiles;
+            } else {
+                this.files = await this.fileIndex.scanWorkspace();
+                this.fileIndex.setFiles(this.files);
+            }
+        }
+
+        if (this.endpoints.length === 0) {
+            const cachedEndpoints = this.endpointCache.getEndpoints();
+            if (cachedEndpoints) {
+                this.endpoints = cachedEndpoints;
+            } else {
+                this.endpoints = await this.parser.scanControllers();
+                this.endpointCache.setEndpoints(this.endpoints);
+            }
+        }
+    }
+
     private async refreshEndpoints(showProgress: boolean = true): Promise<void> {
         try {
             if (showProgress) {
@@ -99,6 +144,51 @@ export class CompositeSearchProvider {
             }
         } catch (error) {
             console.error('Error refreshing endpoints:', error);
+        }
+    }
+
+    private async updateSingleFile(filePath: string): Promise<void> {
+        if (this.shouldExcludeFile(filePath)) {
+            return;
+        }
+
+        await this.fileIndex.updateFile(filePath);
+        const files = this.fileIndex.getFiles();
+        if (files) {
+            this.files = files;
+        }
+
+        if (!this.shouldParseControllerFile(filePath)) {
+            const removed = this.removeEndpointsForFile(filePath);
+            if (removed) {
+                this.endpointCache.removeEndpointsFromFile(filePath);
+            }
+            return;
+        }
+
+        try {
+            const updatedEndpoints = await this.parser.parseControllerFile(filePath);
+            this.replaceEndpointsForFile(filePath, updatedEndpoints);
+            this.endpointCache.updateEndpointsFromFile(filePath, updatedEndpoints);
+        } catch (error) {
+            console.warn(`[CompositeSearchProvider] Failed to parse ${filePath}, removing cached endpoints.`, error);
+            const removed = this.removeEndpointsForFile(filePath);
+            if (removed) {
+                this.endpointCache.removeEndpointsFromFile(filePath);
+            }
+        }
+    }
+
+    private removeSingleFile(filePath: string): void {
+        this.fileIndex.removeFile(filePath);
+        const files = this.fileIndex.getFiles();
+        if (files) {
+            this.files = files;
+        }
+
+        const removed = this.removeEndpointsForFile(filePath);
+        if (removed) {
+            this.endpointCache.removeEndpointsFromFile(filePath);
         }
     }
 
@@ -296,42 +386,21 @@ export class CompositeSearchProvider {
                 return;
             }
 
-            console.log(`[CompositeSearchProvider] UI: Searching for "${value}" in mode: ${currentMode}`);
-
             // Use setTimeout to ensure UI update happens asynchronously
             setTimeout(() => {
                 let results;
                 switch (currentMode) {
                     case 'mixed':
                         results = this.mixedSearch(value);
-                        console.log(`[CompositeSearchProvider] UI: Setting ${results.length} mixed results to QuickPick`);
-
-                        // Debug: Check each result item
-                        results.forEach((result, index) => {
-                            console.log(`[CompositeSearchProvider] UI: Mixed Item ${index + 1}:`, {
-                                label: result.label,
-                                description: result.description,
-                                detail: result.detail,
-                                type: result.type,
-                                hasFile: !!result.file,
-                                hasEndpoint: !!result.endpoint
-                            });
-                        });
-
                         quickPick.items = results;
-                        console.log(`[CompositeSearchProvider] UI: QuickPick now has ${quickPick.items.length} items`);
                         break;
                     case 'file':
                         results = this.fileSearch(value);
-                        console.log(`[CompositeSearchProvider] UI: Setting ${results.length} file results to QuickPick`);
                         quickPick.items = results;
-                        console.log(`[CompositeSearchProvider] UI: QuickPick now has ${quickPick.items.length} items`);
                         break;
                     case 'endpoint':
                         results = this.endpointSearch(value);
-                        console.log(`[CompositeSearchProvider] UI: Setting ${results.length} endpoint results to QuickPick`);
                         quickPick.items = results;
-                        console.log(`[CompositeSearchProvider] UI: QuickPick now has ${quickPick.items.length} items`);
                         break;
                 }
             }, 0); // Execute in next tick
@@ -358,20 +427,14 @@ export class CompositeSearchProvider {
     }
 
     private mixedSearch(searchText: string): CompositeQuickPickItem[] {
-        console.log(`[CompositeSearchProvider] mixedSearch called with: "${searchText}"`);
         const fileResults = this.fileSearch(searchText);
         const endpointResults = this.endpointSearch(searchText);
 
-        console.log(`[CompositeSearchProvider] mixedSearch - fileResults: ${fileResults.length}, endpointResults: ${endpointResults.length}`);
-
-        // 限制结果数量，优先显示端点
         const results = [...endpointResults.slice(0, 20), ...fileResults.slice(0, 30)];
-        console.log(`[CompositeSearchProvider] mixedSearch - returning ${results.length} total results`);
         return results;
     }
 
     private fileSearch(searchText: string): CompositeQuickPickItem[] {
-        console.log(`[CompositeSearchProvider] fileSearch called with: "${searchText}"`);
         const normalizedSearch = searchText.toLowerCase().trim();
 
         // 首先尝试路径匹配（包含 / 的情况）
@@ -613,6 +676,80 @@ export class CompositeSearchProvider {
                 };
             });
         }
+    }
+
+    private shouldParseControllerFile(filePath: string): boolean {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders) {
+            return false;
+        }
+
+        const workspacePath = workspaceFolders[0].uri.fsPath;
+        const relativePath = path.relative(workspacePath, filePath);
+        const normalizedPath = this.normalizePath(relativePath);
+
+        const config = vscode.workspace.getConfiguration('springEndpointNavigator');
+        const includePatterns = config.get<string[]>('includeFiles', ['**/*.java']);
+        const excludePatterns = config.get<string[]>('excludeFiles', ['**/node_modules/**', '**/target/**', '**/build/**']);
+
+        const included = includePatterns.some(pattern => this.matchPattern(normalizedPath, pattern));
+        const excluded = excludePatterns.some(pattern => this.matchPattern(normalizedPath, pattern));
+
+        return included && !excluded;
+    }
+
+    private shouldExcludeFile(filePath: string): boolean {
+        const workspaceFolders = vscode.workspace.workspaceFolders;
+        if (!workspaceFolders) {
+            return true;
+        }
+
+        const relativePath = path.relative(workspaceFolders[0].uri.fsPath, filePath);
+        const normalizedPath = this.normalizePath(relativePath);
+
+        const defaultExcludes = [
+            '**/node_modules/**',
+            '**/target/**',
+            '**/build/**',
+            '**/.git/**',
+            '**/dist/**',
+            '**/.vscode/**',
+            '**/.idea/**',
+            '**/logs/**',
+            '**/*.log',
+            '**/*.class'
+        ];
+
+        const config = vscode.workspace.getConfiguration('springEndpointNavigator');
+        const excludePatterns = config.get<string[]>('fileSearch.excludePatterns', defaultExcludes);
+
+        return excludePatterns.some(pattern => this.matchPattern(normalizedPath, pattern));
+    }
+
+    private replaceEndpointsForFile(filePath: string, newEndpoints: SpringEndpoint[]): void {
+        this.endpoints = this.endpoints.filter(endpoint => endpoint.filePath !== filePath);
+        this.endpoints.push(...newEndpoints);
+    }
+
+    private removeEndpointsForFile(filePath: string): boolean {
+        const originalLength = this.endpoints.length;
+        this.endpoints = this.endpoints.filter(endpoint => endpoint.filePath !== filePath);
+        return this.endpoints.length !== originalLength;
+    }
+
+    private matchPattern(filePath: string, pattern: string): boolean {
+        const normalizedPattern = this.normalizePath(pattern);
+        const escapedPattern = normalizedPattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');
+        const regexPattern = '^' + escapedPattern
+            .replace(/\*\*/g, '.*')
+            .replace(/\*/g, '[^/]*')
+            .replace(/\?/g, '[^/]') + '$';
+
+        return new RegExp(regexPattern).test(filePath);
+    }
+
+    private normalizePath(filePath: string): string {
+        return filePath.split(path.sep).join('/');
     }
 
     private async navigateToFile(file: FileIndexItem): Promise<void> {

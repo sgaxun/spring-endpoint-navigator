@@ -34,7 +34,7 @@ export class SpringControllerParser {
         return endpoints;
     }
 
-    private async parseControllerFile(filePath: string): Promise<SpringEndpoint[]> {
+    async parseControllerFile(filePath: string): Promise<SpringEndpoint[]> {
         const content = fs.readFileSync(filePath, 'utf8');
         const lines = content.split('\n');
 
@@ -68,8 +68,6 @@ export class SpringControllerParser {
                 if (methodMapping) {
                     const fullUrl = this.combinePaths(currentControllerPath, methodMapping.path);
                     const methodComment = this.extractMethodComment(lines, i);
-
-                    console.log(`[DEBUG] Found endpoint: ${methodMapping.method} ${fullUrl}, method: ${methodMapping.methodName}, comment: "${methodComment}"`);
 
                     endpoints.push({
                         url: fullUrl,

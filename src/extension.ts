@@ -5,6 +5,7 @@ import { EndpointSearchProvider } from './endpointSearchProvider';
 import { FileIndex } from './fileIndex';
 import { FileSearchProvider } from './fileSearchProvider';
 import { CompositeSearchProvider } from './compositeSearchProvider';
+import { FileSystemWatcher } from './fileSystemWatcher';
 
 let endpointCache: EndpointCache;
 let fileIndex: FileIndex;
@@ -12,6 +13,7 @@ let controllerParser: SpringControllerParser;
 let searchProvider: EndpointSearchProvider;
 let fileSearchProvider: FileSearchProvider;
 let compositeSearchProvider: CompositeSearchProvider;
+let fileSystemWatcher: FileSystemWatcher | null = null;
 
 export function activate(context: vscode.ExtensionContext) {
     console.log('Spring Endpoint Navigator is now active!');
@@ -23,6 +25,14 @@ export function activate(context: vscode.ExtensionContext) {
     searchProvider = new EndpointSearchProvider(controllerParser, endpointCache);
     fileSearchProvider = new FileSearchProvider(fileIndex);
     compositeSearchProvider = new CompositeSearchProvider(controllerParser, endpointCache, fileIndex);
+
+    // Initialize file system watcher for incremental updates
+    try {
+        fileSystemWatcher = new FileSystemWatcher(compositeSearchProvider);
+    } catch (error) {
+        console.error('[Extension] Failed to initialize FileSystemWatcher:', error);
+        fileSystemWatcher = null;
+    }
 
     // Register composite search command (main command)
     let compositeSearchCommand = vscode.commands.registerCommand('spring-endpoint-navigator.search', async () => {
@@ -58,10 +68,24 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.window.showInformationMessage('Cache cleared and workspace rescanned');
     });
 
+    // Register manual refresh command
+    let refreshCacheCommand = vscode.commands.registerCommand('spring-endpoint-navigator.refreshCache', async () => {
+        await compositeSearchProvider.refreshCaches();
+        vscode.window.showInformationMessage('Workspace refreshed');
+    });
+
     context.subscriptions.push(compositeSearchCommand);
     context.subscriptions.push(endpointSearchCommand);
     context.subscriptions.push(fileSearchCommand);
     context.subscriptions.push(clearCacheCommand);
+    context.subscriptions.push(refreshCacheCommand);
+    context.subscriptions.push({
+        dispose: () => {
+            if (fileSystemWatcher) {
+                fileSystemWatcher.dispose();
+            }
+        }
+    });
 
     // Start background initialization without blocking the UI
     startBackgroundScan();
@@ -136,5 +160,8 @@ export function deactivate() {
     }
     if (fileIndex) {
         fileIndex.dispose();
+    }
+    if (fileSystemWatcher) {
+        fileSystemWatcher.dispose();
     }
 }

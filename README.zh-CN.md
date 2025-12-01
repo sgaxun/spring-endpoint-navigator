@@ -30,6 +30,7 @@
 ### ⚡ 性能优化
 - **智能缓存**：文件索引和端点缓存，实现即时启动
 - **后台更新**：文件更改时自动更新缓存
+- **静音增量刷新**：监听工作区变更时自动批处理更新，并忽略 `target/`、`.class`、日志等构建产物，避免控制台刷屏和过高 CPU 占用
 - **快速启动**：使用 `onStartupFinished` 事件实现立即激活
 
 ## 使用方法
@@ -62,6 +63,7 @@
 - `Spring Endpoint Navigator: Search Files` - 仅文件搜索
 - `Spring Endpoint Navigator: Search Spring Endpoint` - 仅端点搜索
 - `Spring Endpoint Navigator: Clear Cache and Rescan` - 清除缓存并重新扫描工作区
+- `Spring Endpoint Navigator: Refresh Cache` - 手动触发重新扫描
 
 ## 通配符搜索
 
