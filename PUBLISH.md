@@ -18,7 +18,7 @@ npm run compile
 确保以下字段已正确配置：
 - `name`: 扩展名称
 - `displayName`: 显示名称
-- `version`: 版本号（当前为 1.1.0）
+- `version`: 版本号（当前为 1.2.4）
 - `publisher`: 发布者（已设置为 "sgaxun"）
 - `repository`: Git 仓库 URL
 - `description`: 扩展描述

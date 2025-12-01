@@ -2,7 +2,7 @@
   "name": "spring-endpoint-navigator",
   "displayName": "Spring Endpoint Navigator",
   "description": "Quickly search and navigate to Spring Boot controller endpoints by URL path",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "publisher": "sgaxun",
   "repository": {
     "type": "git",

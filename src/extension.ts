@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { EndpointCache } from './endpointCache';
 import { SpringControllerParser } from './springControllerParser';
 import { EndpointSearchProvider } from './endpointSearchProvider';
@@ -86,9 +87,36 @@ export function activate(context: vscode.ExtensionContext) {
             }
         }
     });
+    context.subscriptions.push(
+        vscode.workspace.onDidSaveTextDocument(async (document) => {
+            const activeEditor = vscode.window.activeTextEditor;
+            if (!activeEditor || activeEditor.document !== document) {
+                return;
+            }
+
+            if (!isControllerJavaFile(document)) {
+                return;
+            }
+
+            try {
+                await compositeSearchProvider.handleFileChange(document.uri.fsPath, 'modified');
+                vscode.window.setStatusBarMessage('Spring Endpoint Navigator: 当前控制器端点已刷新', 2000);
+            } catch (error) {
+                console.error('[Extension] Failed to refresh endpoints on save:', error);
+            }
+        })
+    );
 
     // Start background initialization without blocking the UI
     startBackgroundScan();
+}
+
+function isControllerJavaFile(document: vscode.TextDocument): boolean {
+    if (document.languageId !== 'java') {
+        return false;
+    }
+    const fileName = path.basename(document.uri.fsPath);
+    return fileName.toLowerCase().endsWith('controller.java');
 }
 
 async function startBackgroundScan(): Promise<void> {

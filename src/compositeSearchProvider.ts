@@ -739,11 +739,16 @@ export class CompositeSearchProvider {
 
     private matchPattern(filePath: string, pattern: string): boolean {
         const normalizedPattern = this.normalizePath(pattern);
+
+        // 先转义正则保留 * 和 ?，再分别处理 **、*、?
         const escapedPattern = normalizedPattern.replace(/[.+^${}()|[\]\\]/g, '\\$&');
-        const regexPattern = '^' + escapedPattern
-            .replace(/\*\*/g, '.*')
+        const globstarPlaceholder = '__GLOBSTAR__';
+        const withPlaceholders = escapedPattern.replace(/\*\*/g, globstarPlaceholder);
+
+        const regexPattern = '^' + withPlaceholders
             .replace(/\*/g, '[^/]*')
-            .replace(/\?/g, '[^/]') + '$';
+            .replace(/\?/g, '[^/]')
+            .replace(new RegExp(globstarPlaceholder, 'g'), '.*') + '$';
 
         return new RegExp(regexPattern).test(filePath);
     }

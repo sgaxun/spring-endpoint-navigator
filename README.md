@@ -31,6 +31,7 @@ A powerful VS Code extension that provides comprehensive search and navigation f
 - **Intelligent Caching**: File index and endpoint caching for instant startup
 - **Background Updates**: Automatic cache updates when files change
 - **Quiet Incremental Refresh**: Workspace watcher ignores build/temp outputs (e.g., `target/`, `.class`, logs) and batches updates to avoid console spam and CPU spikes
+- **Save-to-Refresh**: When the active `*Controller.java` file is saved, its endpoints are re-parsed and merged into the cache instantly
 - **Fast Startup**: Uses `onStartupFinished` event for immediate activation
 
 ## Usage

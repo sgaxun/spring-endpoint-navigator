@@ -1,5 +1,11 @@
 # Changelog
 
+# Changelog
+
+## 1.2.4
+- 修复通配符匹配逻辑，确保保存控制器后不会误判为排除路径导致端点丢失
+- 监听当前激活的 `*Controller.java` 保存事件，立即重新解析并增量刷新端点缓存
+
 ## 1.2.3
 - 新增 `CHANGELOG.md`，发布到 Open VSX 后可在 “Changes” 看到版本说明
 
