@@ -13,6 +13,7 @@
   },
   "homepage": "https://github.com/sgaxun/spring-endpoint-navigator#readme",
   "license": "MIT",
+  "licenseKeywords": ["MIT", "OSI Approved", "Permissive"],
   "engines": {
     "vscode": "^1.74.0"
   },
