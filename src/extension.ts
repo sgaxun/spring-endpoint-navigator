@@ -26,7 +26,18 @@ export function activate(context: vscode.ExtensionContext) {
 
     // Register composite search command (main command)
     let compositeSearchCommand = vscode.commands.registerCommand('spring-endpoint-navigator.search', async () => {
-        await compositeSearchProvider.showCompositeSearch();
+        // 获取当前选中的文本
+        const editor = vscode.window.activeTextEditor;
+        let selectedText = '';
+
+        if (editor) {
+            const selection = editor.selection;
+            if (!selection.isEmpty) {
+                selectedText = editor.document.getText(selection);
+            }
+        }
+
+        await compositeSearchProvider.showCompositeSearch(selectedText);
     });
 
     // Register legacy endpoint search command

@@ -131,7 +131,7 @@ export class CompositeSearchProvider {
         }
     }
 
-    async showCompositeSearch(): Promise<void> {
+    async showCompositeSearch(initialText: string = ''): Promise<void> {
         if (this.endpoints.length === 0 && this.files.length === 0) {
             vscode.window.showInformationMessage('No data indexed. Scanning workspace...');
             await this.refreshCaches();
@@ -142,10 +142,10 @@ export class CompositeSearchProvider {
             return;
         }
 
-        await this.showTabbedSearch();
+        await this.showTabbedSearch(initialText);
     }
 
-    private async showTabbedSearch(): Promise<void> {
+    private async showTabbedSearch(initialText: string = ''): Promise<void> {
         const locale = vscode.env.language;
         const isZh = locale.startsWith('zh');
 
@@ -157,11 +157,17 @@ export class CompositeSearchProvider {
         // 设置界面标题和描述
         quickPick.title = isZh ? 'Spring Endpoint Navigator - 综合搜索' : 'Spring Endpoint Navigator - Composite Search';
 
+        // 如果有初始文本，设置到搜索框中
+        if (initialText) {
+            quickPick.value = initialText;
+        }
+
         // 创建标签页按钮
         const mixedButton = isZh ? '🔍 混合搜索' : '🔍 Mixed Search';
         const fileButton = isZh ? '📁 文件搜索' : '📁 File Search';
         const endpointButton = isZh ? '🌐 端点搜索' : '🌐 Endpoint Search';
 
+        // 始终使用综合搜索模式
         let currentMode: SearchMode = 'mixed';
 
         const updateSearchMode = (mode: SearchMode) => {
